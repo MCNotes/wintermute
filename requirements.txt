@@ -1,5 +1,2 @@
 aiohttp
-cachetools
 gidgethub
-requests
-

@@ -1,9 +1,9 @@
 import os
+
 from aiohttp import web
 
-# Creating a basic webserver
 async def main(request):
-    return web.Response(status=200, text='Howdy matey!')
+    return web.Response(status=200, text="Hello world!")
 
 
 if __name__ == "__main__":
@@ -14,4 +14,3 @@ if __name__ == "__main__":
         port = int(port)
 
     web.run_app(app, port=port)
-
