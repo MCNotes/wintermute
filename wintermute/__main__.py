@@ -1,11 +1,15 @@
+import asyncio
+import importlib
 import os
+import sys
+import traceback
 
 import aiohttp
-
 from aiohttp import web
 import cachetools
-from gidgethub import routing, sansio
 from gidgethub import aiohttp as gh_aiohttp
+from gidgethub import routing
+from gidgethub import sansio
 
 from . import review
 
@@ -23,6 +27,7 @@ async def pr_closed_event(event, gh, *args, **kwargs):
         message = f"Thanks for the PR @{user}"
         await gh.post(url, data={"body": message})
 
+
 async def main(request):
     try:
         body = await request.read()
@@ -34,10 +39,7 @@ async def main(request):
         oauth_token = os.environ.get("GH_AUTH")
         async with aiohttp.ClientSession() as session:
             gh = gh_aiohttp.GitHubAPI(
-                session,
-                os.environ.get("GH_USERNAME"),
-                oauth_token=oauth_token,
-                cache=cache,
+                session, "trallard", oauth_token=oauth_token, cache=cache
             )
             # Give GitHub some time to reach internal consistency.
             await asyncio.sleep(1)
@@ -52,11 +54,10 @@ async def main(request):
         return web.Response(status=500)
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     app = web.Application()
     app.router.add_post("/", main)
     port = os.environ.get("PORT")
     if port is not None:
         port = int(port)
-
     web.run_app(app, port=port)
