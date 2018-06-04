@@ -7,16 +7,9 @@ from aiohttp import web
 from gidgethub import routing, sansio
 from gidgethub import aiohttp as gh_aiohttp
 
+from . import review
+
 router = routing.Router()
-
-
-@router.register("issues", action="opened")
-async def issue_opened_event(event, gh, *args, **kwargs):
-    """ Whenever an issue is opened, greet the author and say thanks."""
-    url = event.data["issue"]["comments_url"]
-    user = event.data["issue"]["user"]["login"]
-    message = f"Thanks for opening the issue @{user}, will look into it (I'm a bot 🤖)"
-    await gh.post(url, data={"body": message})
 
 
 @router.register("pull_request", action="closed")
@@ -35,7 +28,7 @@ async def issue_comment_created_event(event, gh, *args, **kwargs):
     """Thumbs up for my own issue comment"""
     url = f"{event.data['comment']['url']}/reactions"
     user = event.data["comment"]["user"]["login"]
-    if user == "Mariatta":
+    if user == "trallard":
         await gh.post(
             url,
             data={"content": "+1"},
