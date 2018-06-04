@@ -24,8 +24,7 @@ async def issue_opened_event(event, gh, *args, **kwargs):
     labels_url = f"{event.data['issue']['url']}/labels"
     message = f"Hello @{user}, I'm here to help with your MCNotes submission"
     await gh.post(url, data={"body": message})
-    await gh.post(labels_url,
-                  data=['pre-review'])
+    # await gh.post(labels_url, data=["pre-review"])
 
 
 @router.register("pull_request", action="closed")
