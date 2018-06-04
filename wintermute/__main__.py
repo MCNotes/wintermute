@@ -1,3 +1,4 @@
+"""Implement a webserver to monitor the journal reviews"""
 import os
 
 import aiohttp
@@ -9,15 +10,15 @@ from gidgethub import aiohttp as gh_aiohttp
 
 router = routing.Router()
 
+
 @router.register("issues", action="opened")
 async def issue_opened_event(event, gh, *args, **kwargs):
     """ Whenever an issue is opened, greet the author and say thanks."""
-    url = event.data['issue']['comments_url']
-    user = event.data['issue']['user']['login']
-    message = f"Thanks for opening the issue @{user}, will look into it (I'm a bot 🤖)"
-    await gh.post(url, data={
-        'body': message,
-    })
+    url = event.data["issue"]["comments_url"]
+    user = event.data["issue"]["user"]["login"]
+    message = f"Thanks for opening the issue @{user}. We'll make sure to have a look"
+    await gh.post(url, data={"body": message})
+
 
 @router.register("pull_request", action="closed")
 async def pr_closed_event(event, gh, *args, **kwargs):
@@ -29,15 +30,18 @@ async def pr_closed_event(event, gh, *args, **kwargs):
         message = f"Thanks for the PR @{user}"
         await gh.post(url, data={"body": message})
 
+
 @router.register("issue_comment", action="created")
 async def issue_comment_created_event(event, gh, *args, **kwargs):
     """Thumbs up for my own issue comment"""
     url = f"{event.data['comment']['url']}/reactions"
     user = event.data["comment"]["user"]["login"]
     if user == "trallard":
-        await gh.post(url,
-                      data={'content': '+1'},
-                      accept="application/vnd.github.squirrel-girl-preview+json")
+        await gh.post(
+            url,
+            data={"content": "+1"},
+            accept="application/vnd.github.squirrel-girl-preview+json",
+        )
 
 
 async def main(request):
@@ -53,8 +57,7 @@ async def main(request):
 
     # instead of mariatta, use your own username
     async with aiohttp.ClientSession() as session:
-        gh = gh_aiohttp.GitHubAPI(session, "trallard",
-                                  oauth_token=oauth_token)
+        gh = gh_aiohttp.GitHubAPI(session, "trallard", oauth_token=oauth_token)
 
         # call the appropriate callback for the event
         await router.dispatch(event, gh)
