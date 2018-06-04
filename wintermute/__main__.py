@@ -1,4 +1,4 @@
-"""Implement a webserver to monitor the journal reviews"""
+"""Implement a web server to monitor the journal reviews"""
 import os
 
 import aiohttp
