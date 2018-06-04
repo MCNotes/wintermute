@@ -1,19 +1,13 @@
-"""Implement a web server to monitor the journal reviews"""
 import os
-import asyncio
-import sys
-import traceback
 
 import aiohttp
 
 from aiohttp import web
-import cachetools
-from gidgethub import routing
-from gidgethub import sansio
+
+from gidgethub import routing, sansio
 from gidgethub import aiohttp as gh_aiohttp
 
 router = routing.Router()
-cache = cachetools.LRUCache(maxsize=500)
 
 
 @router.register("issues", action="opened")
@@ -21,10 +15,8 @@ async def issue_opened_event(event, gh, *args, **kwargs):
     """ Whenever an issue is opened, greet the author and say thanks."""
     url = event.data["issue"]["comments_url"]
     user = event.data["issue"]["user"]["login"]
-    labels_url = f"{event.data['issue']['url']}/labels"
-    message = f"Hello @{user}, I'm here to help with your MCNotes submission"
+    message = f"Thanks for opening the issue @{user}, will look into it (I'm a bot 🤖)"
     await gh.post(url, data={"body": message})
-    # await gh.post(labels_url, data=["pre-review"])
 
 
 @router.register("pull_request", action="closed")
@@ -43,7 +35,7 @@ async def issue_comment_created_event(event, gh, *args, **kwargs):
     """Thumbs up for my own issue comment"""
     url = f"{event.data['comment']['url']}/reactions"
     user = event.data["comment"]["user"]["login"]
-    if user == "trallard":
+    if user == "Mariatta":
         await gh.post(
             url,
             data={"content": "+1"},
@@ -58,13 +50,13 @@ async def main(request):
     # our authentication token and secret
     secret = os.environ.get("GH_SECRET")
     oauth_token = os.environ.get("GH_AUTH")
+    bot_user = os.environ.get("GH_USERNAME")
 
     # a representation of GitHub webhook event
     event = sansio.Event.from_http(request.headers, body, secret=secret)
 
-    # instead of mariatta, use your own username
     async with aiohttp.ClientSession() as session:
-        gh = gh_aiohttp.GitHubAPI(session, "trallard", oauth_token=oauth_token)
+        gh = gh_aiohttp.GitHubAPI(session, bot_user, oauth_token=oauth_token)
 
         # call the appropriate callback for the event
         await router.dispatch(event, gh)
