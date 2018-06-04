@@ -1,0 +1,5 @@
+aiohttp
+cachetools
+gidgethub
+requests
+
