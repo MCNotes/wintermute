@@ -9,3 +9,5 @@ dependencies:
     - gidgethub
     - aiohttp
     - cachetools
+    - pytest-asyncio
+    - pytest-aiohttp
