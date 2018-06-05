@@ -11,7 +11,7 @@ REVIEW_RE = re.compile(r"\[[A-Z]+\-*[A-Z]+\]")
 
 @router.register("issues", action="opened")
 @router.register("issues", action="reopened")
-async def issue_opened_event(event, gh, *args, **kwargs):
+async def new_issue(event, gh, *args, **kwargs):
     """ Whenever an issue is opened, greet the author and say thanks."""
     issue = event.data["issue"]
     status_label_found = REVIEW_RE.search(issue["title"])
@@ -41,7 +41,7 @@ async def new_issue_comment(event, gh, *args, **kwargs):
         await gh.post(
             url,
             data={"content": "+1"},
-            accept="application/vnd.github.squirrel-girl-preview+json",
+            #accept="application/vnd.github.squirrel-girl-preview+json",
         )
 
 

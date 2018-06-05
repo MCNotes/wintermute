@@ -1,4 +1,6 @@
 import http
+import json
+import pathlib
 
 import gidgethub
 from gidgethub import sansio
@@ -6,8 +8,8 @@ import pytest
 
 from wintermute import review
 
-class FakeGH:
 
+class FakeGH:
     def __init__(self, *, getiter=None, getitem=None, delete=None, post=None):
         self._getiter_return = getiter
         self._getitem_return = getitem
@@ -38,12 +40,15 @@ class FakeGH:
         post_url = sansio.format_url(url, url_vars)
         self.post_.append((post_url, data))
 
+
 def example(file_name):
+    """Opens one of the .json files stored in examples/github """
     this_dir = pathlib.Path(__file__).parent
-    examples = this_dir / 'examples' / 'github'
+    examples = this_dir / "examples" / "github"
     example = examples / file_name
-    with example.open('r', encoding='utf-8') as file:
+    with example.open("r", encoding="utf-8") as file:
         return json.load(file)
+
 
 async def test_new_issue_comment():
     # newly added comments to the issue by the author
@@ -53,16 +58,27 @@ async def test_new_issue_comment():
             "user": {"login": "trallard"},
             "labels": [],
             "labels_url": "https://api.github.com/labels/42",
-            "url": "https://api.github.com/issue/42",
-            "pull_request": {"url": "https://api.github.com/pr/42"},
-            "comments_url": "https://api.github.com/comments/42",
+            "url": "https://api.github.com/repos/MCNotes/MCNOTES-reviews/issues/4",
+            "comments_url": "https://api.github.com/repos/MCNotes/MCNOTES-reviews/issues/4/comments",
         },
         "comment": {
-            "user": {"login": "comment"},
+            "user": {"login": "trallard"},
             "body": "Some clever pun",
+            "url": "https://api.github.com/repos/MCNotes/MCNOTES-reviews/issues/comments/394628641",
         },
     }
     event = sansio.Event(data, event="issue_comment", delivery_id="12345")
     gh = FakeGH()
     await review.router.dispatch(event, gh)
     assert len(gh.post_) == 1
+
+
+async def test_new_issue():
+    # testing on any issue- No review
+    data  = {"action" : "opened"}
+    data['issue'] = example("issue.json")
+    event = sansio.Event(data, event="issues", delivery_id="12345")
+    gh = FakeGH()
+    await review.router.dispatch(event, gh)
+    assert len(gh.post_) == 1
+
