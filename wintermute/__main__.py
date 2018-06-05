@@ -17,21 +17,13 @@ router = routing.Router(review.router)
 cache = cachetools.LRUCache(maxsize=500)
 
 
-@router.register("pull_request", action="closed")
-async def pr_closed_event(event, gh, *args, **kwargs):
-    """When a PR has been closed, say thanks"""
-    user = event.data["pull_request"]["user"]["login"]
-    is_merged = event.data["pull_request"]["merged"]
-    url = event.data["pull_request"]["comments_url"]
-    if is_merged:
-        message = f"Thanks for the PR @{user}"
-        await gh.post(url, data={"body": message})
-
-
 async def main(request):
+    """The actual webserver instance to work
+    with GH webhooks later on"""
     try:
         body = await request.read()
         secret = os.environ.get("GH_SECRET")
+        bot_usr = os.environ.get("GH_USER")
         event = sansio.Event.from_http(request.headers, body, secret=secret)
         print("GH delivery ID", event.delivery_id, file=sys.stderr)
         if event.event == "ping":
@@ -39,7 +31,7 @@ async def main(request):
         oauth_token = os.environ.get("GH_AUTH")
         async with aiohttp.ClientSession() as session:
             gh = gh_aiohttp.GitHubAPI(
-                session, "trallard", oauth_token=oauth_token, cache=cache
+                session, bot_usr, oauth_token=oauth_token, cache=cache
             )
             # Give GitHub some time to reach internal consistency.
             await asyncio.sleep(1)
