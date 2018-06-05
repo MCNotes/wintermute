@@ -81,4 +81,5 @@ async def test_new_issue():
     gh = FakeGH()
     await review.router.dispatch(event, gh)
     assert len(gh.post_) == 1
+    labeling, comment = gh.post_
 

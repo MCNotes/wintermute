@@ -21,7 +21,7 @@ async def new_issue(event, gh, *args, **kwargs):
         await gh.post(issue["labels_url"], data=[label])
 
     else:
-        url = issue["comments_url"]
+        comments_url = issue["comments_url"]
         user = issue["user"]["login"]
         message = (
             f" 🤖 Thanks for opening this issue @{user}. \n\n\n"
@@ -29,7 +29,7 @@ async def new_issue(event, gh, *args, **kwargs):
             f"you should open an issue at"
             f"[https://github.com/MCNotes/MCNotes.github.io/issues](https://github.com/MCNotes/MCNotes.github.io/issues)"
         )
-        await gh.post(url, data={"body": message})
+        await gh.post(comments_url, data={"body": message})
 
 
 @router.register("issue_comment", action="created")
@@ -41,7 +41,7 @@ async def new_issue_comment(event, gh, *args, **kwargs):
         await gh.post(
             url,
             data={"content": "+1"},
-            #accept="application/vnd.github.squirrel-girl-preview+json",
+            accept="application/vnd.github.squirrel-girl-preview+json",
         )
 
 
