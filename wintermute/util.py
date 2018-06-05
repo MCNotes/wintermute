@@ -1,5 +1,4 @@
 import sys
-
 import gidgethub
 
 def labels(issue):
@@ -8,3 +7,6 @@ def labels(issue):
 def user_login(item):
     return item["user"]["login"]
 
+def label_name(event_data):
+    """Get the label name from a label-related webhook event."""
+    return event_data["label"]["name"]
