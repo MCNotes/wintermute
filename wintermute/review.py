@@ -8,6 +8,7 @@ router = gidgethub.routing.Router()
 REVIEW_CODES = ["PRE-REVIEW", "REVIEW"]
 REVIEW_RE = re.compile(r"\[[A-Z]+\-*[A-Z]+\]")
 
+
 @router.register("issues", action="opened")
 @router.register("issues", action="reopened")
 async def issue_opened_event(event, gh, *args, **kwargs):
@@ -16,15 +17,17 @@ async def issue_opened_event(event, gh, *args, **kwargs):
     status_label_found = REVIEW_RE.search(issue["title"])
 
     if status_label_found:
-        label = status_label_found.group().strip('[]')
+        label = status_label_found.group().strip("[]")
         await gh.post(issue["labels_url"], data=[label])
+
     else:
         url = issue["comments_url"]
         user = issue["user"]["login"]
         message = (
-            f" 🤖 Thanks for opening this issue @{user}. \n"
+            f" 🤖 Thanks for opening this issue @{user}. \n\n\n"
             f"However, if this issue is related to the journal itself "
-            f"you should open an issue at ***."
+            f"you should open an issue at"
+            f"[https://github.com/MCNotes/MCNotes.github.io/issues](https://github.com/MCNotes/MCNotes.github.io/issues)"
         )
         await gh.post(url, data={"body": message})
 

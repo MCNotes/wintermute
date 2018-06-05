@@ -8,3 +8,4 @@ dependencies:
   - pip:
     - gidgethub
     - aiohttp
+    - cachetools
