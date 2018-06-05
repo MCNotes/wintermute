@@ -23,7 +23,7 @@ async def main(request):
     try:
         body = await request.read()
         secret = os.environ.get("GH_SECRET")
-        bot_usr = os.environ.get("GH_USER")
+        bot_usr = os.environ.get("GH_USERNAME")
         event = sansio.Event.from_http(request.headers, body, secret=secret)
         print("GH delivery ID", event.delivery_id, file=sys.stderr)
         if event.event == "ping":

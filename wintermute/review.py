@@ -6,16 +6,18 @@ import gidgethub.routing
 router = gidgethub.routing.Router()
 
 REVIEW_CODES = ["PRE-REVIEW", "REVIEW"]
-REVIEW_RE = re.compile(r"\A\[[A-Z]+\-*[A-Z]+\]\Z")
+REVIEW_RE = re.compile(r"\[[A-Z]+\-*[A-Z]+\]")
 
 @router.register("issues", action="opened")
 @router.register("issues", action="reopened")
 async def issue_opened_event(event, gh, *args, **kwargs):
     """ Whenever an issue is opened, greet the author and say thanks."""
     issue = event.data["issue"]
+    status_label_found = REVIEW_RE.search(issue["title"])
 
-    if issue["title"].strip() in REVIEW_CODES:
-        await gh.post(issue["labels_url"], data=["pre-review"])
+    if status_label_found:
+        label = status_label_found.group().strip('[]')
+        await gh.post(issue["labels_url"], data=[label])
     else:
         url = issue["comments_url"]
         user = issue["user"]["login"]
