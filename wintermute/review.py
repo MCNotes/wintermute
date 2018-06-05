@@ -7,6 +7,12 @@ router = gidgethub.routing.Router()
 
 REVIEW_CODES = ["PRE-REVIEW", "REVIEW"]
 REVIEW_RE = re.compile(r"\[[A-Z]+\-*[A-Z]+\]")
+NEW_ISSUE_COMMENT = (
+    " 🤖 Thanks for opening this issue @{user}. \n\n\n"
+    "However, if this issue is related to the journal itself "
+    "you should open an issue at "
+    "[https://github.com/MCNotes/MCNotes.github.io/issues](https://github.com/MCNotes/MCNotes.github.io/issues)"
+)
 
 
 @router.register("issues", action="opened")
@@ -18,17 +24,15 @@ async def new_issue(event, gh, *args, **kwargs):
 
     if status_label_found:
         label = status_label_found.group().strip("[]")
-        await gh.post(issue["labels_url"], data=[label])
+        labels_url = issue["labels_url"]
+        # generate the post request -> create label coroutine
+        await gh.post(url=labels_url, data=[label])
 
     else:
         comments_url = issue["comments_url"]
         user = issue["user"]["login"]
-        message = (
-            f" 🤖 Thanks for opening this issue @{user}. \n\n\n"
-            f"However, if this issue is related to the journal itself "
-            f"you should open an issue at"
-            f"[https://github.com/MCNotes/MCNotes.github.io/issues](https://github.com/MCNotes/MCNotes.github.io/issues)"
-        )
+        message = NEW_ISSUE_COMMENT.format(user=user)
+        # generate post request -> create comment coroutine
         await gh.post(comments_url, data={"body": message})
 
 
@@ -40,17 +44,7 @@ async def new_issue_comment(event, gh, *args, **kwargs):
     if user == "trallard":
         await gh.post(
             url,
-            data={"content": "+1"},
+            data={"content": "hooray"},
             accept="application/vnd.github.squirrel-girl-preview+json",
         )
 
-
-@router.register("pull_request", action="closed")
-async def pr_closed_event(event, gh, *args, **kwargs):
-    """When a PR has been closed, say thanks"""
-    user = event.data["pull_request"]["user"]["login"]
-    is_merged = event.data["pull_request"]["merged"]
-    url = event.data["pull_request"]["comments_url"]
-    if is_merged:
-        message = f"Thanks for the PR @{user}"
-        await gh.post(url, data={"body": message})

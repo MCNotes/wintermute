@@ -1,10 +1,10 @@
 [
   {
-    "url": "https://api.github.com/repos/MCNotes/MCNOTES-reviews/issues/comments/394628641",
-    "html_url": "https://github.com/MCNotes/MCNOTES-reviews/issues/4#issuecomment-394628641",
+    "url": "https://api.github.com/repos/MCNotes/MCNOTES-reviews/issues/comments/394738836",
+    "html_url": "https://github.com/MCNotes/MCNOTES-reviews/issues/4#issuecomment-394738836",
     "issue_url": "https://api.github.com/repos/MCNotes/MCNOTES-reviews/issues/4",
-    "id": 394628641,
-    "node_id": "MDEyOklzc3VlQ29tbWVudDM5NDYyODY0MQ==",
+    "id": 394738836,
+    "node_id": "MDEyOklzc3VlQ29tbWVudDM5NDczODgzNg==",
     "user": {
       "login": "trallard",
       "id": 23552331,
@@ -25,9 +25,9 @@
       "type": "User",
       "site_admin": false
     },
-    "created_at": "2018-06-05T08:37:22Z",
-    "updated_at": "2018-06-05T08:37:22Z",
+    "created_at": "2018-06-05T14:50:13Z",
+    "updated_at": "2018-06-05T14:50:13Z",
     "author_association": "MEMBER",
-    "body": "Bot bot"
+    "body": " 🤖 Thanks for opening this issue @trallard. \n\n\nHowever, if this issue is related to the journal itself you should open an issue at [https://github.com/MCNotes/MCNotes.github.io/issues](https://github.com/MCNotes/MCNotes.github.io/issues)"
   }
 ]

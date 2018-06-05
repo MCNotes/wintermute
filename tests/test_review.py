@@ -36,9 +36,15 @@ class FakeGH:
     async def delete(self, url, url_vars={}):
         self.delete_url = sansio.format_url(url, url_vars)
 
+    # async def post(self, url, url_vars={}, *, data, accept=sansio.accept_format()):
+    #     post_url = sansio.format_url(url, url_vars)
+    #     self.post_.append((post_url, data))
+    #     self.post_data = data
+
     async def post(self, url, url_vars={}, *, data):
         post_url = sansio.format_url(url, url_vars)
         self.post_.append((post_url, data))
+        self.post_data = data
 
 
 def example(file_name):
@@ -50,36 +56,55 @@ def example(file_name):
         return json.load(file)
 
 
-async def test_new_issue_comment():
-    # newly added comments to the issue by the author
-    data = {
-        "action": "created",
-        "issue": {
-            "user": {"login": "trallard"},
-            "labels": [],
-            "labels_url": "https://api.github.com/labels/42",
-            "url": "https://api.github.com/repos/MCNotes/MCNOTES-reviews/issues/4",
-            "comments_url": "https://api.github.com/repos/MCNotes/MCNOTES-reviews/issues/4/comments",
-        },
-        "comment": {
-            "user": {"login": "trallard"},
-            "body": "Some clever pun",
-            "url": "https://api.github.com/repos/MCNotes/MCNOTES-reviews/issues/comments/394628641",
-        },
-    }
-    event = sansio.Event(data, event="issue_comment", delivery_id="12345")
-    gh = FakeGH()
-    await review.router.dispatch(event, gh)
-    assert len(gh.post_) == 1
+# async def test_new_issue_comment():
+#     # newly added comments to the issue by the author
+#     data = {
+#         "action": "created",
+#         "issue": {
+#             "user": {"login": "trallard"},
+#             "labels": [],
+#             "labels_url": "https://api.github.com/labels/42",
+#             "url": "https://api.github.com/repos/MCNotes/MCNOTES-reviews/issues/4",
+#             "comments_url": "https://api.github.com/repos/MCNotes/MCNOTES-reviews/issues/4/comments",
+#         },
+#         "comment": {
+#             "user": {"login": "trallard"},
+#             "body": "Some clever pun",
+#             "url": "https://api.github.com/repos/MCNotes/MCNOTES-reviews/issues/comments/394628641",
+#         },
+#     }
+#     event = sansio.Event(data, event="issue_comment", delivery_id="12345")
+#     gh = FakeGH()
+#     await review.router.dispatch(event, gh)
+#     assert len(gh.post_) == 1
 
 
 async def test_new_issue():
     # testing on any issue- No review
-    data  = {"action" : "opened"}
-    data['issue'] = example("issue.json")
+    data = {"action": "opened"}
+    data["issue"] = example("issue.json")
+    data["comment"] = example("issue_comments.json")
     event = sansio.Event(data, event="issues", delivery_id="12345")
+
     gh = FakeGH()
     await review.router.dispatch(event, gh)
-    assert len(gh.post_) == 1
-    labeling, comment = gh.post_
+    post_data = gh.post_data
 
+    assert len(gh.post_) == 1
+    assert post_data["body"] == review.NEW_ISSUE_COMMENT.format(
+        user=data["issue"]["user"]["login"]
+    )
+
+    return post_data
+
+    # testing for PRE-REVIEW comments
+    data = {"action": "opened"}
+    data["issue"] = example("review_issue.json")
+    event = sansio.Event(data, event="issues", delivery_id="12345")
+
+    gh = FakeGH()
+    await review.router.dispatch(event, gh)
+    post_ = gh.post_
+
+    assert len(gh.post_) == 1
+    assert post_ == data["issue"]["labels"]["url"]
