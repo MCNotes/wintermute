@@ -31,6 +31,14 @@
   },
   "labels": [
     {
+      "id": 953937919,
+      "node_id": "MDU6TGFiZWw5NTM5Mzc5MTk=",
+      "url": "https://api.github.com/repos/MCNotes/MCNOTES-reviews/labels/bug",
+      "name": "bug",
+      "color": "d73a4a",
+      "default": true
+    },
+    {
       "id": 954237417,
       "node_id": "MDU6TGFiZWw5NTQyMzc0MTc=",
       "url": "https://api.github.com/repos/MCNotes/MCNOTES-reviews/labels/pre-review",

@@ -68,7 +68,7 @@ async def test_new_issue():
 
     return post_data
 
-    # testing for PRE-REVIEW comments
+    # testing for PRE-REVIEW issues
     data = {"action": "opened"}
     data["issue"] = example("review_issue.json")
     event = sansio.Event(data, event="issues", delivery_id="12345")
