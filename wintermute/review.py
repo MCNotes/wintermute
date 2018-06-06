@@ -35,3 +35,4 @@ async def new_issue(event, gh, *args, **kwargs):
         message = NEW_ISSUE_COMMENT.format(user=user)
         # generate post request -> create comment coroutine
         await gh.post(comments_url, data={"body": message})
+

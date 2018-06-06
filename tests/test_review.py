@@ -40,6 +40,7 @@ class FakeGH:
         post_url = sansio.format_url(url, url_vars)
         self.post_.append((post_url, data))
         self.post_data = data
+        self.post_url = post_url
 
 
 def example(file_name):
@@ -67,8 +68,6 @@ async def test_new_issue():
         user=data["issue"]["user"]["login"]
     )
 
-    return post_data
-
     # testing for PRE-REVIEW issues
     data = {"action": "opened"}
     data["issue"] = example("review_issue.json")
@@ -76,9 +75,9 @@ async def test_new_issue():
 
     gh = FakeGH()
     await review.router.dispatch(event, gh)
-    post_ = gh.post_
     post_data = gh.post_data
 
     assert len(gh.post_) == 1
-    assert post_ == data["issue"]["labels"]["url"]
-    assert post_data == "pre-review"
+    post_ = gh.post_[0]
+    assert post_[0] == "https://api.github.com/repos/MCNotes/MCNOTES-reviews/issues/5/labels"
+    assert post_data == ["PRE-REVIEW"]
