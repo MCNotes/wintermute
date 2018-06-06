@@ -3,7 +3,6 @@ import pytest
 
 from wintermute import __main__ as main
 
-
 async def test_ping(aiohttp_client):
     app = web.Application()
     app.router.add_post("/", main.main)
