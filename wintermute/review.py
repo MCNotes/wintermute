@@ -12,6 +12,8 @@ NEW_ISSUE_COMMENT = (
     "However, if this issue is related to the journal itself "
     "you should open an issue at "
     "[https://github.com/MCNotes/MCNotes.github.io/issues](https://github.com/MCNotes/MCNotes.github.io/issues)"
+    "\n\n Do you want me to migrate this issue for you? "
+    "Type in `sure thing` to migrate the issue or `nope` to do nothing"
 )
 
 
@@ -34,17 +36,3 @@ async def new_issue(event, gh, *args, **kwargs):
         message = NEW_ISSUE_COMMENT.format(user=user)
         # generate post request -> create comment coroutine
         await gh.post(comments_url, data={"body": message})
-
-
-@router.register("issue_comment", action="created")
-async def new_issue_comment(event, gh, *args, **kwargs):
-    """Thumbs up for my own issue comment"""
-    url = f"{event.data['comment']['url']}/reactions"
-    user = event.data["comment"]["user"]["login"]
-    if user == "trallard":
-        await gh.post(
-            url,
-            data={"content": "hooray"},
-            accept="application/vnd.github.squirrel-girl-preview+json",
-        )
-
