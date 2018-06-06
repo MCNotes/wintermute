@@ -50,6 +50,7 @@ def example(file_name):
     with example.open("r", encoding="utf-8") as file:
         return json.load(file)
 
+
 async def test_new_issue():
     # testing on any issue- No review
     data = {"action": "opened"}
@@ -76,6 +77,8 @@ async def test_new_issue():
     gh = FakeGH()
     await review.router.dispatch(event, gh)
     post_ = gh.post_
+    post_data = gh.post_data
 
     assert len(gh.post_) == 1
     assert post_ == data["issue"]["labels"]["url"]
+    assert post_data == "pre-review"

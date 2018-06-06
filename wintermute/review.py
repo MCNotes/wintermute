@@ -26,9 +26,8 @@ async def new_issue(event, gh, *args, **kwargs):
 
     if status_label_found:
         label = status_label_found.group().strip("[]")
-        labels_url = issue["labels_url"]
         # generate the post request -> create label coroutine
-        await gh.post(url=labels_url, data=[label])
+        await gh.post(url=issue["labels_url"], data=[label])
 
     else:
         comments_url = issue["comments_url"]

@@ -6,7 +6,8 @@ from wintermute import util
 
 from .test_review import example
 
-def test_label():
+
+def test_labels():
     # testing issues without label
     new_issue = example("issue.json")
     issue_labels = util.labels(new_issue)
@@ -20,18 +21,18 @@ def test_label():
     assert len(issue_labels) == 2
     assert "pre-review" in issue_labels
 
+
 def test_user_login():
     # getting the user login from a simple issue
     new_issue = example("issue.json")
     author = util.user_login(new_issue)
 
-    assert 'trallard' == author
+    assert "trallard" == author
 
     # getting the author of a comment in an issue
     data = {}
-    data['issue'] = new_issue
-    data['comment'] = example("issue_comments.json")
-    author = util.user_login(data['comment'][0])
+    data["issue"] = new_issue
+    data["comment"] = example("issue_comments.json")
+    author = util.user_login(data["comment"][0])
 
-    assert 'trallard' == author
-
+    assert "trallard" == author
