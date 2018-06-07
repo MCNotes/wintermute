@@ -81,3 +81,16 @@ async def test_new_issue():
     post_ = gh.post_[0]
     assert post_[0] == "https://api.github.com/repos/MCNotes/MCNOTES-reviews/issues/5/labels"
     assert post_data == ["PRE-REVIEW"]
+
+
+def test_review_stage():
+    # Random label for issue
+    issue = example("issue.json")
+    issue["labels"] = [{"name": "bug"}]
+
+    assert review.review_stage(issue) == None
+
+    # Pre-review issue
+    issue = example("review_issue.json")
+
+    assert review.review_stage(issue) == "pre-review"

@@ -36,3 +36,5 @@ def test_user_login():
     author = util.user_login(data["comment"][0])
 
     assert "trallard" == author
+
+
