@@ -26,11 +26,6 @@ PREREVIEW_COMMENT = (
 )
 
 
-async def create_label(item, status):
-    """Creates a label on an item (issue, PR)"""
-    await gh.post(url=item["labels_url"], data=[status])
-
-
 @router.register("issues", action="opened")
 @router.register("issues", action="reopened")
 async def new_issue(event, gh, *args, **kwargs):
