@@ -23,6 +23,11 @@ NEW_ISSUE_COMMENT = (
 PREREVIEW_COMMENT = (
     "Hi there! I am here to help sort out some editorial tasks."
     "First, I need to check that all the required files are in place"
+    "Shall you need some help type `@wintermute help`"
+)
+
+REVIEW_COMMENT = (
+    "### Instructions for the review "
 )
 
 
@@ -58,3 +63,27 @@ def review_stage(issue):
     else:
         return None
 
+
+@router.register("issue", action="labeled")
+def start_review(event, gh, *args, **kwargs):
+    """Decide what steps need to be followed. 
+    This is entirely based on the label added by wintermute
+    in previous steps
+    """
+    issue = event.data["issue"]
+    status = review_stage(issue)
+    if status == 'pre-review':
+        pre_review_steps()
+    elif status == 'review':
+        review_steps()
+
+
+async def pre_review_steps():
+    """Starts pre-review and checks the files"""
+    await gh.post(comments_url, data={"body": PREREVIEW_COMMENT})
+    # TODO: add steps to verify the files
+
+async def review_steps():
+    """Starts pre-review and checks the files"""
+    await gh.post(comments_url, data={"body": PREREVIEW_COMMENT})
+    # TODO: add steps to verify the files
